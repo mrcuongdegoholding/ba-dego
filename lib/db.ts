@@ -1,10 +1,13 @@
 import { Pool } from 'pg';
 import bcrypt from 'bcryptjs';
 
+const connectionString = process.env.DATABASE_URL || process.env.POSTGRES_URL;
+const isLocal = connectionString ? (connectionString.includes('localhost') || connectionString.includes('127.0.0.1')) : true;
+
 // Setup connection pool
 const pool = new Pool({
-  connectionString: (process.env.DATABASE_URL || process.env.POSTGRES_URL),
-  ssl: (process.env.DATABASE_URL || process.env.POSTGRES_URL)?.includes('supabase') ? { rejectUnauthorized: false } : undefined,
+  connectionString: connectionString,
+  ...(connectionString && !isLocal ? { ssl: { rejectUnauthorized: false } } : {})
 });
 
 let isInitialized = false;
