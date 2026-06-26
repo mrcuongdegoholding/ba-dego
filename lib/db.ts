@@ -15,7 +15,10 @@ let isInitialized = false;
 function convertSql(sql: string) {
   let i = 1;
   // This simplistic replace handles most cases for this specific application.
-  return sql.replace(/\?/g, () => `$${i++}`);
+  let converted = sql.replace(/\?/g, () => `$${i++}`);
+  // Handle SQLite datetime function
+  converted = converted.replace(/datetime\('now','localtime'\)/gi, 'NOW()');
+  return converted;
 }
 
 class DbWrapper {
