@@ -1,7 +1,10 @@
 import { Pool } from 'pg';
 import bcrypt from 'bcryptjs';
 
-const connectionString = process.env.DATABASE_URL || process.env.POSTGRES_URL;
+let rawConnectionString = process.env.DATABASE_URL || process.env.POSTGRES_URL;
+// Remove any sslmode=... parameters to prevent pg from overriding our custom ssl config
+const connectionString = rawConnectionString ? rawConnectionString.replace(/\?sslmode=[^&]+&?|&sslmode=[^&]+/, '').replace(/\?$/, '') : undefined;
+
 const isLocal = connectionString ? (connectionString.includes('localhost') || connectionString.includes('127.0.0.1')) : true;
 
 // Setup connection pool
