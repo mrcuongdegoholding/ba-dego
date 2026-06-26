@@ -3,8 +3,8 @@ import bcrypt from 'bcryptjs';
 
 // Setup connection pool
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: process.env.DATABASE_URL?.includes('supabase') ? { rejectUnauthorized: false } : undefined,
+  connectionString: (process.env.DATABASE_URL || process.env.POSTGRES_URL),
+  ssl: (process.env.DATABASE_URL || process.env.POSTGRES_URL)?.includes('supabase') ? { rejectUnauthorized: false } : undefined,
 });
 
 let isInitialized = false;
@@ -53,7 +53,7 @@ export function getDb() {
 async function initSchema() {
   if (isInitialized) return;
   isInitialized = true;
-  if (!process.env.DATABASE_URL) {
+  if (!(process.env.DATABASE_URL || process.env.POSTGRES_URL)) {
     console.warn("No DATABASE_URL provided. Cannot initialize schema.");
     return;
   }
